@@ -6,60 +6,77 @@
 #include<vector> 
 #include<string.h>
 #include<sstream>
+#include<cmath>
 using namespace std;
-#define ll long long
-#define N 100005
-struct cnm
+#define N 1050
+int pre[N];
+int mid[N];
+int biaoji;
+struct node
 {
-	int from,to,d;
-}w[N];
+	int val;
+	node* left;
+	node* right;
+	node(int val):val(val),left(NULL),right(NULL) {}
+};
+struct tree
+{
+	node* root;
+};
+node* build(int prel,int prer,int midl,int midr)
+{
+	if(prel>prer)
+	return NULL;
+	node* root=new node(pre[prel]);
+	for(int i=midl;i<=midr;i++)
+	{
+		if(mid[i]==pre[prel])
+		{
+			int leng=i-midl;
+			root->left=build(prel+1,leng+prel,midl,i-1);
+			root->right=build(prel+leng+1,prer,i+1,midr);
+			break;
+		}
+	}
+	return root;
+}
+void last(node* root)
+{
+	if(root==NULL)
+	return;
+	last(root->left);
+	last(root->right);
+	if(biaoji==0)
+	{
+	cout<<root->val;
+	biaoji=1;
+    }
+    else
+    {
+    	cout<<" "<<root->val;
+	}
+	
+}
 int main()
 {
-	int m,n;
-	while(cin>>m>>n)
+	int m;
+	while(cin>>m)
 	{
-		memset(w,0,sizeof(w));
-		for(int i=0;i<n;i++)
+		biaoji=0;
+		for(int i=0;i<m;i++)
 		{
-			cin>>w[i].from>>w[i].to;
-			w[w[i].from].d++;
-			w[w[i].to].d++;
+			cin>>pre[i];
 		}
-		int biaoji1=0;
-		int biaoji2=0;
-		int biaoji3=0;
-		for(int i=0;i<n;i++)
+		for(int i=0;i<m;i++)
 		{
-			if(w[w[i].from].d==2&&w[w[i].to].d==2)
-			biaoji1++;
-			if(w[w[i].from].d==n||w[w[i].to].d==n)
-			biaoji2=1;
-			if(w[w[i].from].d==1||w[w[i].to].d==1)
-			biaoji3++;
+			cin>>mid[i];
 		}
-		if(biaoji1==n)
-		{
-			cout<<"ring topology"<<endl;
-			continue;
-		}
-		else if(biaoji1==n-2&&biaoji3==2)
-		{
-			cout<<"bus topology"<<endl;
-			continue;
-		}
-		else if(biaoji2==1)
-		{
-		cout<<"star topology"<<endl;
-		continue;
-	    }
-		else
-		{
-		cout<<"unknown topology"<<endl;
-		continue;
-	    }
-		
-		
+		tree a;
+	a.root=build(0,m-1,0,m-1);
+	last(a.root);
+	cout<<endl;
 	}
 	return 0;
-} 
+	
+}
 

@@ -4,76 +4,71 @@
 #include<stack>
 #include<queue>
 #include<vector> 
-#include<list>
 #include<string.h>
 #include<sstream>
 #include<cmath>
-#include<numeric>
 using namespace std;
-struct cnm
+#define N 100005
+int a[N],b[N];
+vector<int>G[N];
+vector<int>cun;
+int m;
+void init()
 {
-    int zhi,time;
-	bool operator<(const cnm &a) const
+	memset(a,0,sizeof(a));
+	memset(b,0,sizeof(b));
+	for(int i=1;i<=m;i++)
+	G[i].clear();
+	cun.clear();
+	
+}
+void bfs(int zi,int fu,int ji,int ou)
+{
+	if(ji)
+	a[zi]^=1;
+	if(a[zi]!=b[zi])
 	{
-		return time>a.time;
+		a[zi]^=1;
+		ji^=1;
+		cun.push_back(zi);
 	}
-	cnm(const int& x,const int& y):zhi(x),time(y){} 
-};
+	int j;
+	for(int i=0;i<G[zi].size();i++)
+	{
+		j=G[zi][i];
+		if(j==fu)
+		continue;
+		else
+		bfs(j,zi,ou,ji);
+	}
+}
 int main()
 {
-	int m,cnt=1;
-	while(cin>>m&&m!=0)
-{
-	string s;
-	char a;
-	int shijian=0;
-	list<cnm>p,q;
-	cout<<"Case #"<<cnt<<":"<<endl;
-	cnt++;
-	while(m--)
+	while(cin>>m)
 	{
-		cin>>s>>a;
-		if(s=="push")
+		init();
+		int p,q;
+		for(int i=1;i<m;i++)
 		{
-			int b;
-			cin>>b;
-			if(a=='A')
-			{
-			p.push_front(cnm(b,shijian++));	
-			}
-			else
-			q.push_front(cnm(b,shijian++));
-		}				
-		if(s=="pop")
-		{
-			if(a=='A')
-			{
-				cout<<p.front().zhi<<endl;
-				p.pop_front();
-			}
-			else
-			{
-			cout<<q.front().zhi<<endl;
-			q.pop_front();
-		    }
+			cin>>p>>q;
+			G[p].push_back(q);
+			G[q].push_back(p);
 		}
-		if(s=="merge")
+		for(int i=1;i<=m;i++)
 		{
-			char t;
-			cin>>t;
-			if(a=='A')
-			{
-				p.merge(q);
-				q.clear();
-			}
-			else
-			{
-				q.merge(p);
-				p.clear();
-			}
+			cin>>a[i];
+		}
+		for(int i=1;i<=m;i++)
+		{
+			cin>>b[i];
+		}
+		bfs(1,-1,0,0);
+		cout<<cun.size()<<endl;
+		for(int i=0;i<cun.size();i++)
+		{
+			cout<<cun[i]<<endl;
 		}
 	}
+	return 0;
 }
-return 0;
-}
-   
+
