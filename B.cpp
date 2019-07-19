@@ -9,71 +9,60 @@
 #include<cmath>
 using namespace std;
 #define N 100005
-vector<int>G[N];
-int color[N];
-long long  sum;
-void init()
+int fa[N];
+int number[N];
+int m,n,k;
+int biaoji;
+stack<int>q;
+struct cnm
 {
-	for(int i=0;i<N;i++)
+	int from,to;
+}w[N];
+int find(int x)
+{
+	if(x==fa[x])
+	return x;
+	return fa[x]=find(fa[x]);
+}
+void merge(int x,int y)
+{
+	int fx=find(x);
+	int fy=find(y);
+	q.push(m-biaoji);
+	if(fx!=fy)
 	{
-		G[i].clear();
-		color[i]=-1;
+		fa[fy]=fx;
+		biaoji++;
 	}
 }
-int ranse()
+void init()
 {
-	queue<int>q;
-	q.push(1);
-	color[1]=2;
+	for(int i=0;i<m;i++)
+	fa[i]=i;
+	biaoji=0;
+	memset(w,0,sizeof(w));
 	while(!q.empty())
-	{
-		int a=q.front();
-		q.pop();
-		for(int i=0;i<G[a].size();i++)
-		{
-			if(color[G[a][i]]==color[a])
-			{
-				return 1;
-			}
-			else
-			{
-				if(color[G[a][i]]==-1)
-				{
-					color[G[a][i]]=-color[a];
-					q.push(G[a][i]);
-				}
-			}
-		}
-	}
-	return 0;
+	q.pop();
 }
 int main()
 {
-	int m;
-	while(cin>>m)
+	while(~scanf("%d%d",&m,&n))
 	{
-		sum=0;
 		init();
-		for(int i=0;i<m-1;i++)
+		int i;
+		for(i=0;i<n;i++)
 		{
-			int s,t;
-			cin>>s>>t;
-			G[s].push_back(t);
-			G[t].push_back(s);
+			scanf("%d%d",&w[i].from,&w[i].to);
 		}
-		if(ranse()==0)
+		for(i=n-1;i>=0;i--)
 		{
-			for(int i=0;i<N;i++)
-			{
-				if(color[i]==2)
-				{
-				sum++;
-			    }
-			}
-			long long num=sum*(m-sum);
-		cout<<num-(m-1)<<endl;
-	    }
+			merge(w[i].from,w[i].to);
+		}
+		while(!q.empty())
+		{
+			printf("%d\n",q.top());
+			q.pop();
+		}	
 	}
 	return 0;
-} 
-
+}

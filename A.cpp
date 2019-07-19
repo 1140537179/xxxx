@@ -8,75 +8,63 @@
 #include<sstream>
 #include<cmath>
 using namespace std;
-#define N 1050
-int pre[N];
-int mid[N];
-int biaoji;
-struct node
+#define N 500005
+int fa[N];
+int rank1[N];
+int m,n,k;
+int w[N];
+void init()
 {
-	int val;
-	node* left;
-	node* right;
-	node(int val):val(val),left(NULL),right(NULL) {}
-};
-struct tree
-{
-	node* root;
-};
-node* build(int prel,int prer,int midl,int midr)
-{
-	if(prel>prer)
-	return NULL;
-	node* root=new node(pre[prel]);
-	for(int i=midl;i<=midr;i++)
+	for(int i=1;i<=m;i++)
 	{
-		if(mid[i]==pre[prel])
-		{
-			int leng=i-midl;
-			root->left=build(prel+1,leng+prel,midl,i-1);
-			root->right=build(prel+leng+1,prer,i+1,midr);
-			break;
-		}
-	}
-	return root;
-}
-void last(node* root)
-{
-	if(root==NULL)
-	return;
-	last(root->left);
-	last(root->right);
-	if(biaoji==0)
-	{
-	cout<<root->val;
-	biaoji=1;
+	fa[i]=i;
+	rank1[i]=1;
     }
-    else
-    {
-    	cout<<" "<<root->val;
+}
+int find(int x)
+{
+	if(x==fa[x])
+	return x;
+	return fa[x]=find(fa[x]);
+}
+int merge(int x,int y)
+{
+	int fx=find(x);
+	int fy=find(y);
+	if(fx!=fy)
+	{
+		fa[fy]=fx;
+		rank1[fx]+=rank1[fy];
 	}
-	
+	return rank1[fx];
 }
 int main()
 {
-	int m;
-	while(cin>>m)
+	cin>>m>>n;
 	{
-		biaoji=0;
-		for(int i=0;i<m;i++)
+		init();
+		int i,j;
+		for(i=0;i<n;i++)
 		{
-			cin>>pre[i];
+			int k;
+			cin>>k;
+			int a,b;
+			for(j=0;j<k;j++)
+			{
+				cin>>w[j];
+				merge(w[0],w[j]);
+			}
 		}
-		for(int i=0;i<m;i++)
+		for(i=1;i<=m;i++)
 		{
-			cin>>mid[i];
-		}
-		tree a;
-	a.root=build(0,m-1,0,m-1);
-	last(a.root);
-	cout<<endl;
+			if(i==1)
+			cout<<rank1[find(i)];
+			else
+		  cout<<" "<<rank1[find(i)];
+	    }
+	    cout<<endl;
+		
 	}
 	return 0;
-	
 }
 

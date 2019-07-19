@@ -8,77 +8,68 @@
 #include<sstream>
 #include<cmath>
 using namespace std;
-#define N 510
-int rdu[N];
-int line[N][N];
+#define N 105
+int fa[N];
 int m,n;
-priority_queue<int,vector<int>,greater<int> > q;
+struct cnm
+{
+	int from,to,quan;
+}w[N];
+bool cmp(cnm a,cnm b)
+{
+	return a.quan<b.quan;
+}
+int find(int x)
+{
+	if(x==fa[x])
+	return x;
+	return fa[x]=find(fa[x]);
+}
 void init()
 {
-	while(!q.empty())
-	q.pop();
-	memset(line,0,sizeof(line));
-	memset(rdu,0,sizeof(rdu));
+	for(int i=1;i<=n;i++)
+	fa[i]=i;
+	memset(w,0,sizeof(w));
 }
-void top()
+int panding()
 {
-	int i;
-	int biaoji=0;
-	for(i=1;i<=m;i++)
+	int sum=0;
+	for(int i=1;i<=n;i++)
 	{
-		if(rdu[i]==0)
-		{
-		q.push(i);
-		break;
-	    }
-	}
-	while(!q.empty())
-	{
-		int front=q.top();
-		rdu[front]=-1;
-		q.pop();
-		if(biaoji==0)
-		{
-		cout<<front;
-		biaoji=1;
-	    }
-	    else
-	    cout<<" "<<front;
-		for(i=1;i<=m;i++)
-		{
-			if(line[front][i]==1)
-			{
-			rdu[i]--;
-		    }
-		}
-		for(i=1;i<=m;i++)
-		{
-			if(rdu[i]==0)
-			{
-			q.push(i);
-			break;
-		    }
-		}
+	if(fa[i]==i)
+	sum++;
     }
+    if(sum==1)
+    return 1;
+    else
+    return 0;
+	 
 }
 int main()
 {
-	while(cin>>m>>n)
+	while(cin>>m>>n&&m!=0)
 	{
-		init();
 		int i;
-		for(i=1;i<=n;i++)
-		{
-			int a,b;
-			cin>>a>>b;
-			if(line[a][b]==0)
-			{
-			line[a][b]=1;
-			rdu[b]++;
-		    }
+		init();
+	    for(i=0;i<m;i++)
+	    {
+	    	cin>>w[i].from>>w[i].to>>w[i].quan;
 		}
-		top();
-		cout<<endl;
+		sort(w,w+m,cmp);
+		int sum=0;
+		for(i=0;i<m;i++)
+		{
+			if(find(w[i].from)!=find(w[i].to))
+			{
+				fa[find(w[i].from)]=find(w[i].to);
+				sum+=w[i].quan;
+			}
+		}
+		if(panding()==0)
+		cout<<"?"<<endl;
+		else
+		cout<<sum<<endl;
 	}
+	return 0;
 }
 

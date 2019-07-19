@@ -3,70 +3,101 @@
 #include<algorithm>
 #include<stack>
 #include<queue>
+#include<map>
 #include<vector> 
 #include<string.h>
 #include<sstream>
 #include<cmath>
 using namespace std;
-#define N 100005
-int a[N],b[N];
-vector<int>G[N];
-vector<int>cun;
-int m;
+#define N 2000005
+int n,m;
+int fa[N];
+int cun[N];
+struct cnm
+{
+	int x,y,z;
+};
+vector<cnm>p;
+vector<int>q;
+int find(int x)
+{
+	if(x==fa[x])
+	return x;
+	return fa[x]=find(fa[x]);
+}
+int merge(int x,int y)
+{
+	fa[find(x)]=find(y);
+}
+int query(int x)
+{
+	return lower_bound(cun+1,cun+1+m,x)-cun;//找x对应为q中的哪个整数 
+}
 void init()
 {
-	memset(a,0,sizeof(a));
-	memset(b,0,sizeof(b));
-	for(int i=1;i<=m;i++)
-	G[i].clear();
-	cun.clear();
-	
+	for(int i=1;i<=2*n;i++)
+	{
+	fa[i]=i;
+    }
+	q.clear();
+	p.clear();
 }
-void bfs(int zi,int fu,int ji,int ou)
+bool cmp(cnm a,cnm b)
 {
-	if(ji)
-	a[zi]^=1;
-	if(a[zi]!=b[zi])
+	return a.z>b.z;
+}
+void lisanhua()
+{
+	for(int i=0;i<2*n;i++)
 	{
-		a[zi]^=1;
-		ji^=1;
-		cun.push_back(zi);
-	}
-	int j;
-	for(int i=0;i<G[zi].size();i++)
-	{
-		j=G[zi][i];
-		if(j==fu)
-		continue;
-		else
-		bfs(j,zi,ou,ji);
+		if(i==0||q[i]!=q[i-1])
+		{
+		cun[m]=q[i];
+		m++;
+	    }
 	}
 }
 int main()
 {
-	while(cin>>m)
+	int T;
+	while(cin>>T)
 	{
-		init();
-		int p,q;
-		for(int i=1;i<m;i++)
+		while(T--)
 		{
-			cin>>p>>q;
-			G[p].push_back(q);
-			G[q].push_back(p);
-		}
-		for(int i=1;i<=m;i++)
-		{
-			cin>>a[i];
-		}
-		for(int i=1;i<=m;i++)
-		{
-			cin>>b[i];
-		}
-		bfs(1,-1,0,0);
-		cout<<cun.size()<<endl;
-		for(int i=0;i<cun.size();i++)
-		{
-			cout<<cun[i]<<endl;
+			m=1;
+			cin>>n;
+			init();
+			int x,y,z;
+			for(int i=0;i<n;i++)
+			{
+				cin>>x>>y>>z;
+				p.push_back({x,y,z});
+				q.push_back(x);
+				q.push_back(y);
+			}
+			sort(q.begin(),q.end());
+			lisanhua();
+			sort(p.begin(),p.end(),cmp);
+			int biaoji=0;
+			for(int i=0;i<n;i++)
+			{
+				if(p[i].z==1)
+				{
+					merge(query(p[i].x),query(p[i].y));
+				}
+				else
+				{
+					if(find(query(p[i].x))==find(query(p[i].y)))
+					{
+						biaoji=1;
+						break;
+					}
+				}
+			}
+			if(biaoji==1)
+			cout<<"NO"<<endl;
+			else
+			cout<<"YES"<<endl;
 		}
 	}
 	return 0;
